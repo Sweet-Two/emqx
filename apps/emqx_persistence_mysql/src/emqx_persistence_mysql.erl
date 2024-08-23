@@ -15,47 +15,16 @@
 -export([ on_message_publish/2]).
 
 load(Env) ->
-    emqx:hook('client.connect',       {?MODULE, on_client_connect, [Env]}),
-    emqx:hook('client.connack',       {?MODULE, on_client_connack, [Env]}),
-    emqx:hook('client.connected',     {?MODULE, on_client_connected, [Env]}),
-    emqx:hook('client.disconnected',  {?MODULE, on_client_disconnected, [Env]}),
-    emqx:hook('client.authenticate',  {?MODULE, on_client_authenticate, [Env]}),
-    emqx:hook('client.check_acl',     {?MODULE, on_client_check_acl, [Env]}),
-    emqx:hook('client.subscribe',     {?MODULE, on_client_subscribe, [Env]}),
-    emqx:hook('client.unsubscribe',   {?MODULE, on_client_unsubscribe, [Env]}),
-    emqx:hook('session.created',      {?MODULE, on_session_created, [Env]}),
-    emqx:hook('session.subscribed',   {?MODULE, on_session_subscribed, [Env]}),
-    emqx:hook('session.unsubscribed', {?MODULE, on_session_unsubscribed, [Env]}),
-    emqx:hook('session.resumed',      {?MODULE, on_session_resumed, [Env]}),
-    emqx:hook('session.discarded',    {?MODULE, on_session_discarded, [Env]}),
-    emqx:hook('session.takeovered',   {?MODULE, on_session_takeovered, [Env]}),
-    emqx:hook('session.terminated',   {?MODULE, on_session_terminated, [Env]}),
-    emqx:hook('message.publish',      {?MODULE, on_message_publish, [Env]}),
-    emqx:hook('message.delivered',    {?MODULE, on_message_delivered, [Env]}),
-    emqx:hook('message.acked',        {?MODULE, on_message_acked, [Env]}),
-    emqx:hook('message.dropped',      {?MODULE, on_message_dropped, [Env]}).
-
+    emqx:hook('message.publish',     {?MODULE, on_message_publish, [Env]}),
+    emqx:hook('session.subscribed',  {?MODULE, on_session_subscribed, [Env]}),
+    emqx:hook('client.connected',    {?MODULE, on_client_connected, [Env]}),
+    emqx:hook('client.disconnected', {?MODULE, on_client_disconnected, [Env]}).
 
 unload() ->
-    emqx:unhook('client.connect',       {?MODULE, on_client_connect}),
-    emqx:unhook('client.connack',       {?MODULE, on_client_connack}),
-    emqx:unhook('client.connected',     {?MODULE, on_client_connected}),
-    emqx:unhook('client.disconnected',  {?MODULE, on_client_disconnected}),
-    emqx:unhook('client.authenticate',  {?MODULE, on_client_authenticate}),
-    emqx:unhook('client.check_acl',     {?MODULE, on_client_check_acl}),
-    emqx:unhook('client.subscribe',     {?MODULE, on_client_subscribe}),
-    emqx:unhook('client.unsubscribe',   {?MODULE, on_client_unsubscribe}),
-    emqx:unhook('session.created',      {?MODULE, on_session_created}),
-    emqx:unhook('session.subscribed',   {?MODULE, on_session_subscribed}),
-    emqx:unhook('session.unsubscribed', {?MODULE, on_session_unsubscribed}),
-    emqx:unhook('session.resumed',      {?MODULE, on_session_resumed}),
-    emqx:unhook('session.discarded',    {?MODULE, on_session_discarded}),
-    emqx:unhook('session.takeovered',   {?MODULE, on_session_takeovered}),
-    emqx:unhook('session.terminated',   {?MODULE, on_session_terminated}),
-    emqx:unhook('message.publish',      {?MODULE, on_message_publish}),
-    emqx:unhook('message.delivered',    {?MODULE, on_message_delivered}),
-    emqx:unhook('message.acked',        {?MODULE, on_message_acked}),
-    emqx:unhook('message.dropped',      {?MODULE, on_message_dropped}).
+    emqx:unhook('message.publish',     {?MODULE, on_message_publish}),
+    emqx:unhook('session.subscribed',  {?MODULE, on_session_subscribed}),
+    emqx:unhook('client.connected',    {?MODULE, on_client_connected}),
+    emqx:unhook('client.disconnected', {?MODULE, on_client_disconnected}).
 
 %%--------------------------------------------------------------------
 %% Client subscribe
