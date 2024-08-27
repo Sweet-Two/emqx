@@ -15,3 +15,18 @@
     "INSERT INTO `mqtt`.`on_client_publish`(`action`,`node`,`client_id`,`username`,`topic`,`msg_id`,`payload`,`ts`)
     VALUES (?,?,?,?,?,?,?,?);"
 >>).
+
+-define(INSERT_PUBLISH_MSG_SQL, <<
+    "INSERT INTO `mqtt`.`t_publish_msg`(`msg_id`,`sender`,`topic`,`qos`,`payload`,`create_time`,`sender_ip`)
+    VALUES (?,?,?,?,?,?,?);"
+>>).
+
+-define(INSERT_CONSUME_MSG_SQL, <<
+    "INSERT INTO `mqtt`.`t_consume_msg`(`msg_id`,`client_id`,`create_time`)
+    VALUES (?,?,?);"
+>>).
+
+-define(INSERT_OFFLINE_MSG_SQL, <<
+    "INSERT INTO `mqtt`.`mqtt_msg`(`msg_id`,`sender`,`topic`,`qos`,`retain`,`payload`,`arrived`)
+    VALUES (?,?,?,?,?,?,?);"
+>>).

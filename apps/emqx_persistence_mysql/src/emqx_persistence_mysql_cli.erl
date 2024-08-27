@@ -31,7 +31,13 @@ insert(connected, Params) ->
 insert(disconnected, Params) ->
     query(?INSERT_DISCONNECT_SQL, Params);
 insert(publish, Params) ->
-    query(?INSERT_PUBLISH_SQL, Params).
+    query(?INSERT_PUBLISH_SQL, Params);
+insert(publishmsg, Params) ->
+    query(?INSERT_PUBLISH_MSG_SQL, Params);
+insert(consumemsg, Params) ->
+    query(?INSERT_CONSUME_MSG_SQL, Params);
+insert(offlinemsg, Params) ->
+    query(?INSERT_OFFLINE_MSG_SQL, Params).
 
 query(Sql, Params) ->
     ecpool:with_client(?APP, fun(Connection) ->

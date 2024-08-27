@@ -8,21 +8,33 @@
 
 -export([ load/1,
           unload/0]).
+
+%% Client Lifecircle Hooks
 -export([ on_client_connected/3,
           on_client_disconnected/4,
           on_client_subscribe/4
         ]).
--export([ on_message_publish/2]).
+
+%% Session Lifecircle Hooks
+-export([ on_session_subscribed/4
+        ]).
+
+%% Message Pubsub Hooks
+-export([ on_message_publish/2,
+          on_message_acked/3
+        ]).
 
 load(Env) ->
     emqx:hook('message.publish',     {?MODULE, on_message_publish, [Env]}),
     emqx:hook('session.subscribed',  {?MODULE, on_session_subscribed, [Env]}),
+    emqx:hook('message.acked',       {?MODULE, on_message_acked, [Env]}),
     emqx:hook('client.connected',    {?MODULE, on_client_connected, [Env]}),
     emqx:hook('client.disconnected', {?MODULE, on_client_disconnected, [Env]}).
 
 unload() ->
     emqx:unhook('message.publish',     {?MODULE, on_message_publish}),
     emqx:unhook('session.subscribed',  {?MODULE, on_session_subscribed}),
+    emqx:unhook('message.acked',       {?MODULE, on_message_acked}),
     emqx:unhook('client.connected',    {?MODULE, on_client_connected}),
     emqx:unhook('client.disconnected', {?MODULE, on_client_disconnected}).
 
@@ -65,6 +77,12 @@ on_client_disconnected(#{clientid := ClientId,
     Data = [Action, Node, stringfy(ClientId), stringfy(Username), stringfy(Reason), DisconnectedAt],
     emqx_persistence_mysql_cli:insert(disconnected, Data),
     ok.
+
+on_session_subscribed(#{clientid := ClientId}, Topic, SubOpts, _Env) ->
+    ?LOG(info, "[Persistence_plugin]Session(~s) subscribed ~s with subopts: ~p~n", [ClientId, Topic, SubOpts]),
+  ok.
+
+
 %%--------------------------------------------------------------------
 %% Message publish
 %%--------------------------------------------------------------------
@@ -85,6 +103,23 @@ on_message_publish(Message = #message{topic = <<?PERSISTENCE_KEY, _/binary>> = _
     {ok, Message};
 
 on_message_publish(Message , _Env) ->
+    {ok, Message}.
+
+%%--------------------------------------------------------------------
+%% Message acked
+%%--------------------------------------------------------------------
+on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
+    ?LOG(info,"[Persistence_plugin]Message acked by client(~s): ~s~n",
+        [ClientId, emqx_message:format(Message)]),
+    MsgId = emqx_guid:to_hexstr(Message#message.id),
+    Topic = Message#message.topic,
+    Qos = Message#message.qos,
+    Retain = Message#message.retain,
+    Payload = Message#message.payload,
+    From = Message#message.from,
+    Timestamp = Message#message.timestamp,
+    Data = [MsgId,stringfy(ClientId), Topic, Qos, Retain, Payload,Timestamp],
+    emqx_persistence_mysql_cli:insert(offlinemsg, Data),
     {ok, Message}.
 %%--------------------------------------------------------------------
 %% Internal functions
