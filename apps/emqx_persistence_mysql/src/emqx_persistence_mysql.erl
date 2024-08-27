@@ -114,7 +114,7 @@ on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
     MsgId = emqx_guid:to_hexstr(Message#message.id),
     Topic = Message#message.topic,
     Qos = Message#message.qos,
-    Retain = Message#mqtt_msg.retain,
+    Retain = false,
     Payload = Message#message.payload,
     Timestamp = Message#message.timestamp,
     Data = [MsgId,stringfy(ClientId), Topic, Qos, Retain, Payload,Timestamp],
