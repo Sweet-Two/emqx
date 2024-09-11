@@ -114,10 +114,9 @@ on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
     MsgId = emqx_guid:to_hexstr(Message#message.id),
     Topic = Message#message.topic,
     Qos = Message#message.qos,
-    Retain = false,
     Payload = Message#message.payload,
     Timestamp = Message#message.timestamp,
-    Data = [MsgId,stringfy(ClientId), Topic, Qos, Retain, Payload,Timestamp],
+    Data = [MsgId,stringfy(ClientId), Topic, Qos, Payload,Timestamp],
     emqx_persistence_mysql_cli:insert(offlinemsg, Data),
     {ok, Message}.
 %%--------------------------------------------------------------------
