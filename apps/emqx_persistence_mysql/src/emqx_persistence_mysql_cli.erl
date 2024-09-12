@@ -23,7 +23,9 @@ connect(Options) ->
         {error, Reason} ->
             ?LOG(error, "[MySQL] Can't connect to MySQL server: ~p", [Reason]),
             {error, Reason};
-        Other -> Other
+        Other -> 
+            Other,
+            ?LOG(error, "[MySQL] Unknown error")
     end.
 
 insert(connected, Params) ->
