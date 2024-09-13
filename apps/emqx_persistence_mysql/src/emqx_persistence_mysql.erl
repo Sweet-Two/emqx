@@ -100,6 +100,10 @@ on_message_publish(Message = #message{topic = <<?PERSISTENCE_KEY, _/binary>> = _
     Data = [Action, Node, stringfy(FromClientId),
                           stringfy(FromUsername), Topic, MsgId, Payload, Ts],
     emqx_persistence_mysql_cli:insert(publish, Data),
+    ?LOG(info,"[Persistence_plugin]Message publish test code"),
+    Qos = Message#message.qos,
+    MyData = {MsgId, stringfy(FromClientId), Topic, Qos, Payload, Ts, Node},
+    emqx_persistence_mysql_cli:insert(publishmsg, MyData),
     {ok, Message};
 
 on_message_publish(Message , _Env) ->
@@ -116,20 +120,9 @@ on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
     Qos = Message#message.qos,
     Payload = Message#message.payload,
     Timestamp = Message#message.timestamp,
-    Data = [MsgId,stringfy(ClientId), Topic, Qos, Payload,Timestamp],
+    Data = [MsgId, ClientId, Topic, Qos, Payload,Timestamp],
     emqx_persistence_mysql_cli:insert(offlinemsg, Data),
-
-    ?LOG(info,"[Persistence_plugin]Message acked test code"),
-     {FromClientId, FromUsername} = parse_from(Message),
-    Action = <<"message_acked">>,
-    Node = erlang:atom_to_binary(node()),
-    Topic = Message#message.topic,
-    MsgId = emqx_guid:to_hexstr(Message#message.id),
-    Payload = Message#message.payload,
-    Ts = Message#message.timestamp,
-    Data = [Action, Node, stringfy(FromClientId),
-                          stringfy(FromUsername), Topic, MsgId, Payload, Ts],
-    emqx_persistence_mysql_cli:insert(publish, Data),
+    ?LOG(info,"[Persistence_plugin]Message acked end"),
     {ok, Message}.
 %%--------------------------------------------------------------------
 %% Internal functions
