@@ -17,8 +17,8 @@
 >>).
 
 -define(INSERT_PUBLISH_MSG_SQL, <<
-    "INSERT INTO `mqtt`.`t_publish_msg`(`msg_id`,`sender`,`topic`,`qos`,`payload`,`create_time`,`sender_ip`)
-    VALUES (?,?,?,?,?,?,?);"
+    "INSERT INTO `mqtt`.`t_publish_msg`(`msg_id`,`sender`,`topic`,`payload`,`create_time`,`sender_ip`)
+    VALUES (?,?,?,?,?,?);"
 >>).
 
 -define(INSERT_CONSUME_MSG_SQL, <<
