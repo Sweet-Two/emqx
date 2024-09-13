@@ -118,6 +118,18 @@ on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
     Timestamp = Message#message.timestamp,
     Data = [MsgId,stringfy(ClientId), Topic, Qos, Payload,Timestamp],
     emqx_persistence_mysql_cli:insert(offlinemsg, Data),
+
+    ?LOG(info,"[Persistence_plugin]Message acked test code"),
+     {FromClientId, FromUsername} = parse_from(Message),
+    Action = <<"message_acked">>,
+    Node = erlang:atom_to_binary(node()),
+    Topic = Message#message.topic,
+    MsgId = emqx_guid:to_hexstr(Message#message.id),
+    Payload = Message#message.payload,
+    Ts = Message#message.timestamp,
+    Data = [Action, Node, stringfy(FromClientId),
+                          stringfy(FromUsername), Topic, MsgId, Payload, Ts],
+    emqx_persistence_mysql_cli:insert(publish, Data),
     {ok, Message}.
 %%--------------------------------------------------------------------
 %% Internal functions
