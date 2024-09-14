@@ -101,7 +101,7 @@ on_message_publish(Message = #message{topic = <<?PERSISTENCE_KEY, _/binary>> = _
                           stringfy(FromUsername), Topic, MsgId, Payload, Ts],
     emqx_persistence_mysql_cli:insert(publish, Data),
     ?LOG(info,"[Persistence_plugin]Message publish test code"),
-    MyData = {MsgId, stringfy(FromClientId), Topic, Payload, Ts, Node},
+    MyData = [MsgId, stringfy(FromClientId), Topic, Payload, Ts, Node],
     emqx_persistence_mysql_cli:insert(publishmsg, MyData),
     {ok, Message};
 
