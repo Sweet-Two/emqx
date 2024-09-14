@@ -119,7 +119,7 @@ on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
     Qos = Message#message.qos,
     Payload = Message#message.payload,
     Timestamp = Message#message.timestamp,
-    Data = [MsgId, ClientId, Topic, Qos, Payload,Timestamp],
+    Data = [MsgId, ClientId, Topic, Payload,Timestamp],
     emqx_persistence_mysql_cli:insert(offlinemsg, Data),
     ?LOG(info,"[Persistence_plugin]Message acked end"),
     {ok, Message}.
