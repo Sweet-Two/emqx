@@ -116,7 +116,6 @@ on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
         [ClientId, emqx_message:format(Message)]),
     MsgId = emqx_guid:to_hexstr(Message#message.id),
     Topic = Message#message.topic,
-    Qos = Message#message.qos,
     Payload = Message#message.payload,
     Timestamp = Message#message.timestamp,
     Data = [MsgId, ClientId, Topic, Payload,Timestamp],
