@@ -27,6 +27,6 @@
 >>).
 
 -define(INSERT_OFFLINE_MSG_SQL, <<
-    "INSERT INTO `mqtt`.`mqtt_msg`(`msg_id`,`sender`,`topic`,`payload`,`arrived`)
+    "INSERT INTO `mqtt`.`mqtt_msg`(`msgid`,`sender`,`topic`,`payload`,`arrived`)
     VALUES (?,?,?,?,?);"
 >>).
