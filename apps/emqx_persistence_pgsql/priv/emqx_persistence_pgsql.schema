@@ -67,7 +67,8 @@
   Pool = cuttlefish:conf_get("persistence.pgsql.pool", Conf),
   Username = cuttlefish:conf_get("persistence.pgsql.username", Conf),
   Passwd = cuttlefish:conf_get("persistence.pgsql.password", Conf),
-  DB = cuttlefish:conf_get("persistence.pgsql.database", Conf),
+  DB1 = cuttlefish:conf_get("persistence.pgsql.database1", Conf),
+  DB2 = cuttlefish:conf_get("persistence.pgsql.database2", Conf),
   Timeout = case cuttlefish:conf_get("persistence.pgsql.query_timeout", Conf) of
                 "" -> 300000;
                 Duration ->
