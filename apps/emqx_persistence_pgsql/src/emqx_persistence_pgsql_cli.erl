@@ -11,6 +11,7 @@
 -export([parse_query/2]).
 -export([ equery/4
         , equery/3
+        , insert/4        
         ]).
 
 -type client_info() :: #{username := _,
