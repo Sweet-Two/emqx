@@ -1,0 +1,109 @@
+%%-*- mode: erlang -*-
+
+{mapping, "persistence.pgsql.server", "emqx_persistence_pgsql.server", [
+  {default, {"127.0.0.1", 5432}},
+  {datatype, [integer, ip, string]}
+]}.
+
+{mapping, "persistence.pgsql.pool", "emqx_persistence_pgsql.server", [
+  {default, 8},
+  {datatype, integer}
+]}.
+
+{mapping, "persistence.pgsql.username", "emqx_persistence_pgsql.server", [
+  {default, ""},
+  {datatype, string}
+]}.
+
+{mapping, "persistence.pgsql.password", "emqx_persistence_pgsql.server", [
+  {default, ""},
+  {datatype, string}
+]}.
+
+{mapping, "persistence.pgsql.database1", "emqx_persistence_pgsql.server", [
+  {default, "ota_emqx"},
+  {datatype, string}
+]}.
+
+{mapping, "persistence.pgsql.database2", "emqx_persistence_pgsql.server", [
+  {default, "ota_system"},
+  {datatype, string}
+]}.
+
+{mapping, "persistence.pgsql.query_timeout", "emqx_persistence_pgsql.server", [
+  {default, ""},
+  {datatype, string}
+]}.
+
+{mapping, "persistence.pgsql.ssl", "emqx_persistence_pgsql.server", [
+  {default, off},
+  {datatype, flag}
+]}.
+
+{mapping, "persistence.pgsql.ssl.cafile", "emqx_persistence_pgsql.server", [
+  {default, ""},
+  {datatype, string}
+]}.
+
+{mapping, "persistence.pgsql.ssl.certfile", "emqx_persistence_pgsql.server", [
+  {default, ""},
+  {datatype, string}
+]}.
+
+{mapping, "persistence.pgsql.ssl.keyfile", "emqx_persistence_pgsql.server", [
+  {default, ""},
+  {datatype, string}
+]}.
+
+{translation, "emqx_persistence_pgsql.server", fun(Conf) ->
+  {MyHost, MyHost} =
+  case cuttlefish:conf_get("persistence.pgsql.server", Conf) of
+    {Ip, Port} -> {Ip, Port};
+    S          -> case string:tokens(S, ":") of
+                    [Domain]       -> {Domain, 5432};
+                    [Domain, Port] -> {Domain, list_to_integer(Port)}
+                  end
+    end,
+  Pool = cuttlefish:conf_get("persistence.pgsql.pool", Conf),
+  Username = cuttlefish:conf_get("persistence.pgsql.username", Conf),
+  Passwd = cuttlefish:conf_get("persistence.pgsql.password", Conf),
+  DB = cuttlefish:conf_get("persistence.pgsql.database", Conf),
+  Timeout = case cuttlefish:conf_get("persistence.pgsql.query_timeout", Conf) of
+                "" -> 300000;
+                Duration ->
+                  case cuttlefish_duration:parse(Duration, ms) of
+                      {error, Reason} -> error(Reason);
+                      Ms when is_integer(Ms) -> Ms
+                  end
+            end,
+  TempHost = case inet:parse_address(MyHost) of
+      {ok, IpAddr} ->
+          IpAddr;
+      _ ->
+          MyHost
+  end,
+  Options = [{pool_size, Pool},
+             {auto_reconnect, 1},
+             {host, TempHost},
+             {port, MyPort},
+             {user, Username},
+             {password, Passwd},
+             {database1, DB1},
+             {database2, DB2},
+             {encoding, utf8},
+             {query_timeout, Timeout},
+             {keep_alive, true}],
+  case cuttlefish:conf_get("persistence.pgsql.ssl", Conf) of
+        true ->
+            CA = cuttlefish:conf_get("persistence.pgsql.ssl.cafile", Conf),
+            Cert = cuttlefish:conf_get("persistence.pgsql.ssl.certfile", Conf),
+            Key = cuttlefish:conf_get("persistence.pgsql.ssl.keyfile", Conf),
+            [{ssl, [{server_name_indication, disable},
+                                             {cacertfile, CA},
+                                             {certfile, Cert},
+                                             {keyfile, Key}]}];
+        _ ->
+            Options
+  end
+end}.
+
