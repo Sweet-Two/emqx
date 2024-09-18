@@ -56,7 +56,7 @@
 ]}.
 
 {translation, "emqx_persistence_pgsql.server", fun(Conf) ->
-  {MyHost, MyHost} =
+  {MyHost, MyPort} =
   case cuttlefish:conf_get("persistence.pgsql.server", Conf) of
     {Ip, Port} -> {Ip, Port};
     S          -> case string:tokens(S, ":") of
