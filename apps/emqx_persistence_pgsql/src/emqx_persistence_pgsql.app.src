@@ -1,0 +1,12 @@
+{application, emqx_persistence_pgsql,
+ [{description, "Data to pgsql plugin"},
+  {vsn, "git"},
+  {modules, []},
+  {registered, [emqx_persistence_pgsql_sup]},
+  {mod, {emqx_persistence_pgsql_app, []}},
+  {applications, [kernel,stdlib,epgsql,ecpool]},
+  {env,[]},
+  {licenses, ["Apache 2.0"]},
+  {maintainers, ["Sweet-Two"]},
+  {links, ["https://openlab.ezlinker.cn"]}
+ ]}.
