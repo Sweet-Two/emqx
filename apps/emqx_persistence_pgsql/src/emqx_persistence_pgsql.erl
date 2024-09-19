@@ -56,15 +56,14 @@ on_client_subscribe(#{clientid := _ClientId, username := _Username}, _Properties
 %%--------------------------------------------------------------------
 on_client_connected(#{clientid := ClientId,
                       username := Username,
-                      peerhost := Peerhost ,
-                      pool := Pool}, ConnInfo, _Env) ->
+                      peerhost := Peerhost}, ConnInfo, _Env) ->
     Action = <<"client_connected">>,
     Node = erlang:atom_to_binary(node()),
     Ipaddress = iolist_to_binary(inet:ntoa(Peerhost)),
     ConnectedAt = maps:get(connected_at, ConnInfo),
     Data = [Action, Node, stringfy(ClientId), stringfy(Username),
             Ipaddress, ConnectedAt],
-    emqx_persistence_pgsql_cli:insert(Pool, ?INSERT_CONNECT_SQL, Data, ConnInfo),
+    emqx_persistence_pgsql_cli:insert(?INSERT_CONNECT_SQL, Data, ConnInfo),
     ok.
 
 %%--------------------------------------------------------------------
