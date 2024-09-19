@@ -118,7 +118,8 @@ bin(B) when is_binary(B) -> B;
 bin(X) -> X.
 
 insert(Sql, Params, ConnInfo) ->
-    {ok, Pool} = application:get_env(?APP, pool_size),
+    {ok, Opts} = application:get_env(?APP, server),
+    Pool = proplists:get_value(pool_size, Opts),
     case emqx_auth_pgsql_cli:equery(Pool, Sql, Params, ConnInfo) of
     {ok, _, []} ->
         ?LOG(info, "[PostgreSQL] execute the sql[~p~n] success", Sql),
