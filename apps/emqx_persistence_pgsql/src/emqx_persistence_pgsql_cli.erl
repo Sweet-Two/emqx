@@ -11,7 +11,7 @@
 -export([parse_query/2]).
 -export([ equery/4
         , equery/3
-        , insert/4
+        , insert/3
         ]).
 
 -type client_info() :: #{username := _,
@@ -117,7 +117,8 @@ bin(A) when is_atom(A) -> atom_to_binary(A, utf8);
 bin(B) when is_binary(B) -> B;
 bin(X) -> X.
 
-insert(Pool, Sql, Params, ConnInfo) ->
+insert(Sql, Params, ConnInfo) ->
+    {ok, Pool} = application:get_env(?APP, pool_size),
     case emqx_auth_pgsql_cli:equery(Pool, Sql, Params, ConnInfo) of
     {ok, _, []} ->
         ?LOG(info, "[PostgreSQL] execute the sql[~p~n] success", Sql),
