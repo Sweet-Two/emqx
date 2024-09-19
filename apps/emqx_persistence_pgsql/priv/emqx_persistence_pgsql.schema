@@ -20,6 +20,11 @@
   {datatype, string}
 ]}.
 
+{mapping, "persistence.pgsql.encoding", "emqx_persistence_pgsql.server", [
+  {default, utf8},
+  {datatype, atom}
+]}.
+
 {mapping, "persistence.pgsql.database1", "emqx_persistence_pgsql.server", [
   {default, "ota_emqx"},
   {datatype, string}
@@ -69,6 +74,7 @@
   Passwd = cuttlefish:conf_get("persistence.pgsql.password", Conf),
   DB1 = cuttlefish:conf_get("persistence.pgsql.database1", Conf),
   DB2 = cuttlefish:conf_get("persistence.pgsql.database2", Conf),
+  Encoding = cuttlefish:conf_get("persistence.pgsql.encoding", Conf),
   Timeout = case cuttlefish:conf_get("persistence.pgsql.query_timeout", Conf) of
                 "" -> 300000;
                 Duration ->
@@ -87,11 +93,11 @@
              {auto_reconnect, 1},
              {host, TempHost},
              {port, MyPort},
-             {user, Username},
+             {username, Username},
              {password, Passwd},
              {database1, DB1},
              {database2, DB2},
-             {encoding, utf8},
+             {encoding, Encoding},
              {query_timeout, Timeout},
              {keep_alive, true}],
   case cuttlefish:conf_get("persistence.pgsql.ssl", Conf) of
