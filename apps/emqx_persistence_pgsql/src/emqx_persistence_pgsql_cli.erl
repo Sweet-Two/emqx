@@ -11,7 +11,7 @@
 -export([parse_query/2]).
 -export([ equery/4
         , equery/3
-        , insert/4        
+        , insert/4
         ]).
 
 -type client_info() :: #{username := _,
@@ -34,12 +34,6 @@ parse_query(Par, Sql) ->
             {atom_to_list(Par), []}
     end.
 
-pgvar(Sql, Params) ->
-    Vars = ["$" ++ integer_to_list(I) || I <- lists:seq(1, length(Params))],
-    lists:foldl(fun({Param, Var}, S) ->
-            re:replace(S, Param, Var, [{return, list}])
-        end, Sql, lists:zip(Params, Vars)).
-
 %%--------------------------------------------------------------------
 %% PostgreSQL Connect/Query
 %%--------------------------------------------------------------------
@@ -55,7 +49,7 @@ connect(Opts) ->
     Password = proplists:get_value(password, Opts),
     case epgsql:connect(Host, Username, Password, conn_opts(Opts)) of
         {ok, C} ->
-            conn_post(C),
+            ?LOG(info, "[Postgres] Connect to Postgres server[~p] success.", [Host]),
             {ok, C};
         {error, Reason = econnrefused} ->
             ?LOG(error, "[Postgres] Can't connect to Postgres server: Connection refused."),
@@ -71,24 +65,12 @@ connect(Opts) ->
             {error, Reason}
     end.
 
-conn_post(Connection) ->
-    lists:foreach(fun(Par) ->
-        Sql0 = application:get_env(?APP, Par, undefined),
-        case parse_query(Par, Sql0) of
-            undefined -> ok;
-            {_, Params} ->
-                Sql = pgvar(Sql0, Params),
-                epgsql:parse(Connection, atom_to_list(Par), Sql, [])
-        end
-    end,  [auth_query, acl_query, super_query]).
 
 conn_opts(Opts) ->
     conn_opts(Opts, []).
 conn_opts([], Acc) ->
     Acc;
 conn_opts([Opt = {database1, _}|Opts], Acc) ->
-    conn_opts(Opts, [Opt|Acc]);
-conn_opts([Opt = {database2, _}|Opts], Acc) ->
     conn_opts(Opts, [Opt|Acc]);
 conn_opts([Opt = {ssl, _}|Opts], Acc) ->
     conn_opts(Opts, [Opt|Acc]);
