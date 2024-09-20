@@ -3,7 +3,7 @@
 
 -define(INSERT_CONNECT_SQL, <<
     "INSERT INTO on_client_connected(action,node,client_id,username,ip,connected_at)
-    VALUES (?,?,?,?,?,?);"
+    VALUES ?"
 >>).
 
 -define(INSERT_DISCONNECT_SQL, <<
