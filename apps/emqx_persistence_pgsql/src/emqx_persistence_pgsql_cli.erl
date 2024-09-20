@@ -85,11 +85,11 @@ conn_opts([_Opt|Opts], Acc) ->
 
 -spec(equery(atom(), string() | epgsql:statement(), Parameters::[any()]) -> {ok, ColumnsDescription :: [any()], RowsValues :: [any()]} | {error, any()} ).
 equery(Pool, Sql, Params) ->
-    ecpool:with_client(Pool, fun(C) -> epgsql:prepared_query(C, Sql, Params) end).
+    ecpool:with_client(Pool, fun(C) -> epgsql:equery(C, Sql, Params) end).
 
 -spec(equery(atom(), string() | epgsql:statement(), Parameters::[any()], client_info()) ->  {ok, ColumnsDescription :: [any()], RowsValues :: [any()]} | {error, any()} ).
 equery(Pool, Sql, Params, ClientInfo) ->
-    ecpool:with_client(Pool, fun(C) -> epgsql:prepared_query(C, Sql, replvar(Params, ClientInfo)) end).
+    ecpool:with_client(Pool, fun(C) -> epgsql:equery(C, Sql, replvar(Params, ClientInfo)) end).
 
 replvar(Params, ClientInfo) ->
     replvar(Params, ClientInfo, []).
