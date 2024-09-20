@@ -76,6 +76,7 @@ on_client_disconnected(#{clientid := ClientId,
     DisconnectedAt = maps:get(disconnected_at, ConnInfo, erlang:system_time(millisecond)),
     Data = [Action, Node, stringfy(ClientId), stringfy(Username), stringfy(Reason), DisconnectedAt],
     ?LOG(info, "[Persistence_plugin]test", [Data]),
+    emqx_persistence_pgsql_cli:insert(?INSERT_DISCONNECT_SQL, Data, ConnInfo),
     ok.
 
 on_session_subscribed(#{clientid := ClientId}, Topic, SubOpts, _Env) ->
@@ -100,6 +101,8 @@ on_message_publish(Message = #message{topic = <<?PERSISTENCE_KEY, _/binary>> = _
     Data = [Action, Node, stringfy(FromClientId),
                           stringfy(FromUsername), Topic, MsgId, Payload, Ts],
     ?LOG(info, "[Persistence_plugin]test", [Data]),
+    MyData = [MsgId, stringfy(FromClientId), Topic, Payload, Ts, Node],
+    emqx_persistence_mysql_cli:insert(?INSERT_PUBLISH_MSG_SQL, MyData),
     {ok, Message};
 
 on_message_publish(Message , _Env) ->
@@ -117,6 +120,7 @@ on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
     Timestamp = Message#message.timestamp,
     Data = [MsgId, stringfy(ClientId), Topic, Payload, Timestamp],
     ?LOG(info, "[Persistence_plugin]test", [Data]),
+    emqx_persistence_pgsql_cli:insert(?INSERT_OFFLINE_MSG_SQL, Data),
     {ok, Message}.
 %%--------------------------------------------------------------------
 %% Internal functions
