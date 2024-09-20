@@ -120,17 +120,17 @@ bin(X) -> X.
 insert(Sql, Params, ConnInfo) ->
     {ok, Opts} = application:get_env(?APP, server),
     Pool = proplists:get_value(pool_size, Opts),
-    case emqx_auth_pgsql_cli:equery(Pool, Sql, Params, ConnInfo) of
-    {ok, _, []} ->
-        ?LOG(info, "[PostgreSQL] execute the sql[~p~n] success", Sql),
-        ok;
-    {ok, _, Rows} ->
-        ?LOG(warning, "[PostgreSQL] the insert sql conflict,the Rows:~p~n", [Rows]),
-        ok;
-    {error, Reason} ->
-        ?LOG(error, "[PostgreSQL] insert error: ~p~n", [Reason]),
-        ok;
-    Other -> 
-        Other,
-        ?LOG(error, "[PostgreSQL] Unknown error")
+    case equery(Pool, Sql, Params, ConnInfo) of
+        {ok, _, []} ->
+            ?LOG(info, "[PostgreSQL] execute the sql[~p~n] success", Sql),
+            ok;
+        {ok, _, Rows} ->
+            ?LOG(warning, "[PostgreSQL] the insert sql conflict,the Rows:~p~n", [Rows]),
+            ok;
+        {error, Reason} ->
+            ?LOG(error, "[PostgreSQL] insert error: ~p~n", [Reason]),
+            ok;
+        Other -> 
+            Other,
+            ?LOG(error, "[PostgreSQL] Unknown error")
     end.
