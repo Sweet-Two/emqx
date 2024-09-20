@@ -12,6 +12,7 @@
 -export([ equery/4
         , equery/3
         , insert/3
+        , insert/2
         ]).
 
 -type client_info() :: #{username := _,
@@ -119,6 +120,21 @@ bin(X) -> X.
 
 insert(Sql, Params, ConnInfo) ->
     case equery(?APP, Sql, Params, ConnInfo) of
+        {ok, _, []} ->
+            ?LOG(info, "[PostgreSQL] execute the sql[~p~n] success", Sql),
+            ok;
+        {ok, _, Rows} ->
+            ?LOG(warning, "[PostgreSQL] the insert sql conflict,the Rows:~p~n", [Rows]),
+            ok;
+        {error, Reason} ->
+            ?LOG(error, "[PostgreSQL] insert error: ~p~n", [Reason]),
+            ok;
+        Other -> 
+            Other,
+            ?LOG(error, "[PostgreSQL] Unknown error")
+    end.
+insert(Sql, Params) ->
+    case equery(?APP, Sql, Params) of
         {ok, _, []} ->
             ?LOG(info, "[PostgreSQL] execute the sql[~p~n] success", Sql),
             ok;
