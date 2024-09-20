@@ -118,9 +118,7 @@ bin(B) when is_binary(B) -> B;
 bin(X) -> X.
 
 insert(Sql, Params, ConnInfo) ->
-    {ok, Opts} = application:get_env(?APP, server),
-    Pool = proplists:get_value(pool_size, Opts),
-    case equery(Pool, Sql, Params, ConnInfo) of
+    case equery(?APP, Sql, Params, ConnInfo) of
         {ok, _, []} ->
             ?LOG(info, "[PostgreSQL] execute the sql[~p~n] success", Sql),
             ok;
