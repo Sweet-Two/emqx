@@ -2,13 +2,13 @@
 -define(ECPOOL_WORKER, emqx_persistence_pgsql_cli).
 
 -define(INSERT_CONNECT_SQL, <<
-    "INSERT INTO on_client_connected(action,node,client_id,username,ip,connected_at)
-    VALUES ?"
+    INSERT INTO on_client_connected(action,node,client_id,username,ip,connected_at)
+    VALUES ?
 >>).
 
 -define(INSERT_DISCONNECT_SQL, <<
-    "INSERT INTO on_client_disconnected(action,node,client_id,username,reason,disconnected_at)
-    VALUES (?,?,?,?,?,?);"
+    INSERT INTO on_client_disconnected(action,node,client_id,username,reason,disconnected_at)
+    VALUES (?,?,?,?,?,?);
 >>).
 
 -define(INSERT_PUBLISH_MSG_SQL, <<
