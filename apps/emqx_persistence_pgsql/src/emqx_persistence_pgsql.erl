@@ -63,7 +63,7 @@ on_client_connected(#{clientid := ClientId,
     ConnectedAt = maps:get(connected_at, ConnInfo),
     Data = [Action, Node, stringfy(ClientId), stringfy(Username),
             Ipaddress, ConnectedAt],
-    emqx_persistence_pgsql_cli:insert(?INSERT_CONNECT_SQL, Data, ConnInfo),
+    emqx_persistence_pgsql_cli:insert(?INSERT_CONNECT_SQL, Data),
     ok.
 
 %%--------------------------------------------------------------------
@@ -75,8 +75,8 @@ on_client_disconnected(#{clientid := ClientId,
     Node = erlang:atom_to_binary(node()),
     DisconnectedAt = maps:get(disconnected_at, ConnInfo, erlang:system_time(millisecond)),
     Data = [Action, Node, stringfy(ClientId), stringfy(Username), stringfy(Reason), DisconnectedAt],
-    ?LOG(info, "[Persistence_plugin]test", [Data]),
-    emqx_persistence_pgsql_cli:insert(?INSERT_DISCONNECT_SQL, Data, ConnInfo),
+    ?LOG(info, "[Persistence_plugin]test:~p~n", [Data]),
+    emqx_persistence_pgsql_cli:insert(?INSERT_DISCONNECT_SQL, Data),
     ok.
 
 on_session_subscribed(#{clientid := ClientId}, Topic, SubOpts, _Env) ->
@@ -100,7 +100,7 @@ on_message_publish(Message = #message{topic = <<?PERSISTENCE_KEY, _/binary>> = _
     Ts = Message#message.timestamp,
     Data = [Action, Node, stringfy(FromClientId),
                           stringfy(FromUsername), Topic, MsgId, Payload, Ts],
-    ?LOG(info, "[Persistence_plugin]test", [Data]),
+    ?LOG(info, "[Persistence_plugin]test:~p~n", [Data]),
     MyData = [MsgId, stringfy(FromClientId), Topic, Payload, Ts, Node],
     emqx_persistence_pgsql_cli:insert(?INSERT_PUBLISH_MSG_SQL, MyData),
     {ok, Message};
@@ -119,7 +119,7 @@ on_message_acked(_ClientInfo = #{clientid := ClientId}, Message, _Env) ->
     Payload = Message#message.payload,
     Timestamp = Message#message.timestamp,
     Data = [MsgId, stringfy(ClientId), Topic, Payload, Timestamp],
-    ?LOG(info, "[Persistence_plugin]test", [Data]),
+    ?LOG(info, "[Persistence_plugin]test:~p~n", [Data]),
     emqx_persistence_pgsql_cli:insert(?INSERT_OFFLINE_MSG_SQL, Data),
     {ok, Message}.
 %%--------------------------------------------------------------------
